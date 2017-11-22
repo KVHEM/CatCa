@@ -48,6 +48,10 @@ switch(where,
          .datadir = "C://testR//data//"
          .workdir = "C://testR//"
        },
+       'rserver' = {
+         .datadir = "/srv/shiny-server/KVHEM/HAMR/used_data"
+         .workdir = ""
+       },
        'IRINA' = {
          .datadir = "C:\\Users\\Irina\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
          .workdir = ""
