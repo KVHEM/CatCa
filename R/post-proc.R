@@ -112,7 +112,9 @@ indicators = function(SPI_vars = c('P', 'R', 'RM', 'BF'), SPEI_vars = c('PE'), D
   S = rbindlist(S, idcol = 'IID')
   
   setwd(file.path(.datadir, 'indikatory'))
+
   saveRDS(S, 'spi.rds')
+
   
   # SPEI
   
