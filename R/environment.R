@@ -39,10 +39,18 @@ switch(where,
          .datadir = "D:\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
          .workdir = ""
        },
+       "HERMANOVSKY-01" = {
+         .datadir = "D://muj_cloud//Shared//BILAN_UPOV//used_data"
+         .workdir = ""
+       },
 
        "LEST" = {
          .datadir = "C://testR//data//"
          .workdir = "C://testR//"
+       },
+       'rserver.science.fzp.czu.cz' = {
+         .datadir = "/srv/shiny-server/KVHEM/HAMR/used_data"
+         .workdir = ""
        },
        'IRINA' = {
          .datadir = "C:\\Users\\Irina\\ownCloud\\Shared\\BILAN_UPOV\\used_data"

@@ -10,7 +10,7 @@
 #'
 #' @examples
 A = Vectorize(function(id, upov_only = FALSE){
-  a = TABA[FROM == id, if(upov_only)(UPOV_AREA)else(TOTAL_AREA)]
+  a = TABA[FROM == id, if(upov_only)(PLOCHA_UPOV)else(PLOCHA_CELKEM)]
   a
 })
 
@@ -133,7 +133,7 @@ MZP = Vectorize(function(id, mm_day = TRUE){
   
   ch = char(id)
   if (nrow(ch)==0) return(NA_real_)
-  Q355d = qmd(355)(id, mm_day = mm_day) #ch[, mm_day2q(Q355d, id) / 365.25]
+  Q355d = qmd(355)(id, mm_day = FALSE) #ch[, mm_day2q(Q355d, id) / 365.25]
   if (is.na(Q355d)) return(NA_real_)
   
   if (Q355d <= 0.05) return(qmd(330)(id, mm_day = mm_day))

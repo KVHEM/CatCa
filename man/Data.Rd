@@ -61,6 +61,16 @@ Umožňuje přistupovat k datasetům ze synchronizované owncloud složky "used_
 }
 
 \strong{TABNAD} (data.table): Tabulka charakteristik nadrží
+\itemize{
+\item UPOV_ID - UPOV_ID
+}
+
+\strong{TABREKY} (data.table): Tabulka delek rek pro HYPE
+\itemize{
+\item UPOV_ID - UPOV_ID
+\item L_HTOK: delka hlavniho toku v metrech
+\item L_VTOK: delka vedlejsich toku v metrech
+}
 }
 
 \section{Data(uziv06)}{

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extrahuj m-denni vody z tabulky chars — qmd • CatCa</title>
+<title>Hlavni funkce pro post processing po nove kalibraci — post_process • CatCa</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -80,27 +80,27 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Extrahuj m-denni vody z tabulky chars</h1>
+    <h1>Hlavni funkce pro post processing po nove kalibraci</h1>
     </div>
 
     
-    <p>Extrahuj m-denni vody z tabulky chars</p>
+    <p>Hlavni funkce pro post processing po nove kalibraci</p>
     
 
-    <pre class="usage"><span class='fu'>qmd</span>(<span class='no'>m</span>)</pre>
+    <pre class="usage"><span class='fu'>post_process</span>(<span class='kw'>aggregate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>indicators</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>m</th>
-      <td><p>pocet dni</p></td>
+      <th>indicators</th>
+      <td><p>(logical) Spocitat indikatory?</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>funkce s parametry id = UPOV_ID a mm_day: TRUE = Qmd je v mm_den jinak m3/s</p>
+    <p>NULL Funkce se pouziva pro sve vedlejsi efekty - priprava/prepocet ruznych datasetu - meni data v .datadir</p>
     
 
   </div>
