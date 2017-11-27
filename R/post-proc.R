@@ -93,6 +93,8 @@ indicators = function(SPI_vars = c('P', 'R', 'RM', 'BF'), SPEI_vars = c('PE'), D
   setwd(file.path(.datadir, 'postproc_stable'))
   BM = data.table(readRDS('bilan_month.rds'))
   
+  # !! DO SOUBORU S INDIKATORY PROSIM ZAHRN I SLOUPEC ROK A SLOUPEC MESIC
+  
   # SPI
   
   registerDoMC(cores = 4)
