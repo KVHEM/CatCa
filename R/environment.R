@@ -43,7 +43,6 @@ switch(where,
          .datadir = "D://muj_cloud//Shared//BILAN_UPOV//used_data"
          .workdir = ""
        },
-
        "LEST" = {
          .datadir = "C://testR//data//"
          .workdir = "C://testR//"
@@ -55,8 +54,11 @@ switch(where,
        'IRINA' = {
          .datadir = "C:\\Users\\Irina\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
          .workdir = ""
+       },
+       "VMORAVEC-NB-01" = {
+         .datadir = "D:\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
+         .workdir = ""       
        }
-
 )
 
   if (is.null(.datadir)) {
