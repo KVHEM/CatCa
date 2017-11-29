@@ -90,7 +90,7 @@ bilan_agg = function(){
 #'
 #' @examples
 indicators = function(SPI_vars = c('P', 'RM', 'BF'), DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'SW', 'GS')){
-  
+
   message('Pocitam indikatory.')
   setwd(file.path(.datadir, 'postproc_stable'))
   BM = data.table(readRDS('bilan_month.rds'))
