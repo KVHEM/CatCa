@@ -2,7 +2,12 @@
 #'
 #' @param indicators (logical) Spocitat indikatory?
 #' @details Vychozim bodem jsou parametry modelu Bilan (?Data(bpars)? ) - dale navazuji:
-#' \item generovani dennich dat
+#' \itemize{
+#'  \item generovani dennich dat \code{bilan_gen}
+#'  \item agregace do tydenniho a mesicniho kroku \code{bilan_agg}
+#'  \item vypocet indikatory \code{indicators}
+#'  \item ...
+#'  }
 #' @return NULL Funkce se pouziva pro sve vedlejsi efekty - priprava/prepocet ruznych datasetu - meni data v .datadir
 #' @export post_process
 #'
@@ -20,6 +25,16 @@ post_process = function(aggregate = TRUE, indicators = TRUE){
  
 }
 
+
+#' Generuje denni data na zaklade parametru
+#'
+#' @return
+#' @export bilan_gen
+#'
+#' @examples
+bilan_gen = function(){
+  
+}
 
 #' Agreguje data z used_data/bilan na mesicni a tydenni krok, ulozi vysledek do used_data/postproc
 #'
