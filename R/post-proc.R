@@ -95,6 +95,8 @@ indicators = function(SPI_vars = c('P', 'RM', 'BF'), DV_vars = c('P', 'SW', 'R',
   BM = data.table(readRDS('bilan_month.rds'))
   ref = getOption('ref_period')
   
+  # !! DO SOUBORU S INDIKATORY PROSIM ZAHRN I SLOUPEC ROK A SLOUPEC MESIC
+  
   # SPI
   
   registerDoMC(cores = 4)
