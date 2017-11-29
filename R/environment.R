@@ -48,7 +48,7 @@ switch(where,
          .datadir = "C://testR//data//"
          .workdir = "C://testR//"
        },
-       'rserver' = {
+       'rserver.science.fzp.czu.cz' = {
          .datadir = "/srv/shiny-server/KVHEM/HAMR/used_data"
          .workdir = ""
        },
@@ -76,6 +76,14 @@ switch(where,
 
 
 .onLoad <- function(libname, pkgname) {
+  
+  op <- options()
+  op.catca <- list(
+    'ind_scales' = c(1, 3, 6, 9, 12),
+    'ref_period' = as.Date(c('1981-01-01', '2010-12-31'))
+  )
+  toset <- !(names(op.catca) %in% names(op))
+  if(any(toset)) options(op.catca[toset])
   
   give_paths()
   invisible()
