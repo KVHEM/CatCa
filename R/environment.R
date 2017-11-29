@@ -43,7 +43,6 @@ switch(where,
          .datadir = "D://muj_cloud//Shared//BILAN_UPOV//used_data"
          .workdir = ""
        },
-
        "LEST" = {
          .datadir = "C://testR//data//"
          .workdir = "C://testR//"
@@ -55,8 +54,11 @@ switch(where,
        'IRINA' = {
          .datadir = "C:\\Users\\Irina\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
          .workdir = ""
+       },
+       "VMORAVEC-NB-01" = {
+         .datadir = "D:\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
+         .workdir = ""       
        }
-
 )
 
   if (is.null(.datadir)) {
@@ -76,6 +78,14 @@ switch(where,
 
 
 .onLoad <- function(libname, pkgname) {
+  
+  op <- options()
+  op.catca <- list(
+    'ind_scales' = c(1, 3, 6, 9, 12),
+    'ref_period' = as.Date(c('1981-01-01', '2010-12-31'))
+  )
+  toset <- !(names(op.catca) %in% names(op))
+  if(any(toset)) options(op.catca[toset])
   
   give_paths()
   invisible()

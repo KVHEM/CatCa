@@ -1,7 +1,8 @@
 #' Hlavni funkce pro post processing po nove kalibraci
 #'
 #' @param indicators (logical) Spocitat indikatory?
-#'
+#' @details Vychozim bodem jsou parametry modelu Bilan (?Data(bpars)? ) - dale navazuji:
+#' \item generovani dennich dat
 #' @return NULL Funkce se pouziva pro sve vedlejsi efekty - priprava/prepocet ruznych datasetu - meni data v .datadir
 #' @export post_process
 #'
@@ -14,6 +15,7 @@ post_process = function(aggregate = TRUE, indicators = TRUE){
   d = dir()
   
   if (indicators) indicators()    
+  if (webapp_data) web_app()
     
  
 }
@@ -72,7 +74,7 @@ bilan_agg = function(){
   gc()
 }
 
-
+ 
 
 #' Vypocet indikatoru
 #'
@@ -87,28 +89,31 @@ bilan_agg = function(){
 #' @export indicators
 #'
 #' @examples
-indicators = function(SPI_vars = c('P', 'R', 'RM', 'BF'), SPEI_vars = c('PE'), DV_vars = c('P', 'SW', 'R', 'RM'), DV_standardize = TRUE, DV_thr = .2){
+indicators = function(SPI_vars = c('P', 'RM', 'BF'), DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'SW', 'GS')){
   
   message('Pocitam indikatory.')
   setwd(file.path(.datadir, 'postproc_stable'))
   BM = data.table(readRDS('bilan_month.rds'))
+  ref = getOption('ref_period')
+  
+  # !! DO SOUBORU S INDIKATORY PROSIM ZAHRN I SLOUPEC ROK A SLOUPEC MESIC
   
   # SPI
   
   registerDoMC(cores = 4)
   
-  S = foreach(i = c(1, 3, 6, 12)) %dopar% {
+  S = foreach(i = getOption('ind_scales')) %dopar% {
     
     return(
       BM[variable %in% SPI_vars & !is.na(value)][, .(DTM, value = c(
         SPEI::spi(
         ts(value, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
-        scale = i, ref.start = c(1980, 1), ref.end = c(2010, 12))$fitted), 
+        scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])))$fitted), 
         scale = i), by = .(UPOV_ID, variable)])
     
   }
   
-  names(S) = paste0('SPI_', c(1, 3, 6, 12))
+  names(S) = paste0('SPI_', getOption('ind_scales'))
   S = rbindlist(S, idcol = 'IID')
   
   setwd(file.path(.datadir, 'indikatory'))
@@ -117,10 +122,47 @@ indicators = function(SPI_vars = c('P', 'R', 'RM', 'BF'), SPEI_vars = c('PE'), D
 
   
   # SPEI
+  cbm = dcast.data.table(BM[variable %in% c('P', 'PET'), .(UPOV_ID, DTM, variable, value)], UPOV_ID + DTM ~ variable)
+  cbm = cbm[complete.cases(P, PET)]
+  cbm[, B := P - PET]
+  # ...
   
   
   # PDSI
   
+  
   # dV
     
 }
+
+# JE POTREBA DODELAT !!!
+def.vol.val = function(){
+  
+  q = BM[variable == 'RM' & UPOV_ID == 'BER_0100']
+  def.vol(q$value, quantile(q$value, .2))
+  q[, THR := quantile(value, .2), by = .(UPOV_ID, variable)]
+  q[, EID := def.vol_id(value, THR)]
+  q[!is.na(EID) & variable %in% c('RM', 'P', 'BF'), dV := cumsum(THR - value), by = .(UPOV_ID, variable, EID)]
+  q[!is.na(EID) & variable %in% c('SW', 'GS'), dV := (THR - value), by = .(UPOV_ID, variable, EID)]
+  
+}
+
+def.vol_id = function(x, threshold = quantile(x, .2, na.rm = TRUE), mit = 0, min.len = 0){
+  
+  nul = rle(x >= threshold)
+  cs = cumsum(nul$len)
+  nul$val[ (nul$val==TRUE) & (nul$len<mit) ] = FALSE
+  breaks = c(0,cs)#if (cs[1]==1) (cs) else (c(1, cs))
+  fct = cut(1:length(x), breaks = breaks, inc = TRUE)
+  
+  kde = rle(nul$val[as.integer(fct)])
+  kde$val[ (kde$val == FALSE) & (kde$len<min.len)] = TRUE
+  cs = cumsum(kde$len)
+  breaks = c(0,cs)#if (cs[1]==1) (cs) else (c(1, cs))
+  fct = as.integer(cut(1:length(x), breaks = breaks, inc = TRUE))#, labels = 1:length(breaks))	)
+  kkde = which(kde$val)
+  fct[as.integer(fct)%in%kkde] = NA
+  
+  fct
+}
+
