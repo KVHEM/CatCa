@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extrahuj m-denni vody z tabulky chars — qmd • CatCa</title>
+<title>Vypocti m-denni vody — mdq • CatCa</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -80,27 +80,36 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Extrahuj m-denni vody z tabulky chars</h1>
+    <h1>Vypocti m-denni vody</h1>
     </div>
 
     
-    <p>Extrahuj m-denni vody z tabulky chars</p>
+    <p>Vypocti m-denni vody</p>
     
 
-    <pre class="usage"><span class='fu'>qmd</span>(<span class='no'>m</span>)</pre>
+    <pre class="usage"><span class='fu'>mdq</span>(<span class='no'>RM</span>, <span class='kw'>M</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>30</span>, <span class='fl'>60</span>, <span class='fl'>90</span>, <span class='fl'>120</span>, <span class='fl'>150</span>, <span class='fl'>180</span>, <span class='fl'>210</span>, <span class='fl'>240</span>, <span class='fl'>270</span>, <span class='fl'>300</span>, <span class='fl'>330</span>, <span class='fl'>355</span>, <span class='fl'>364</span>),
+  <span class='kw'>return</span> <span class='kw'>=</span> <span class='st'>"vector"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>m</th>
-      <td><p>pocet dni</p></td>
+      <th>RM</th>
+      <td><p>modelovany/pozorovany prutok</p></td>
+    </tr>
+    <tr>
+      <th>M</th>
+      <td><p>vektor m dnu</p></td>
+    </tr>
+    <tr>
+      <th>return</th>
+      <td><p>jak vratit vysledek - jedno z <code>c('vector', 'matrix', 'data.table')</code></p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>funkce s parametry id = UPOV_ID a mm_day: TRUE = Qmd je v mm_den jinak m3/s</p>
+    <p>hodnoty m-dennich vod (vektor/matice/data.table)</p>
     
 
   </div>

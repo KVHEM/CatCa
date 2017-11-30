@@ -143,15 +143,29 @@ MZP = Vectorize(function(id, mm_day = TRUE){
 })
            
            
-#' Vypocti m-denni vody z modelovanych dat
+#' Vypocti m-denni vody
 #'
-#' @param RM modelovany prutok z bilanu
+#' @param RM modelovany/pozorovany prutok
 #' @param M vektor m dnu
+#' @param return jak vratit vysledek - jedno z \code{c('vector', 'matrix', 'data.table')}
 #'
-#' @return kvantily m-dennich vod
-#' @export m_denni_bil
+#' @return hodnoty m-dennich vod (vektor/matice/data.table)
+#' @export mdq
 #'
 #' @examples
-m_denni_bil <- function(RM, M) {
+mdq <- function(RM, M = c(30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 355, 364), return = 'vector') {
   q = quantile(RM, 1-M/365.25) 
+  n = paste0('Q', M, 'd')
+  switch(return, 
+    'vector' =  {    
+      names(q) = n
+      return(q)},
+    'matrix' = 
+      return(matrix(c(M = M, qm = q), ncol = 2, dimnames = list(n, c('M', 'QM')) )),
+    'data.table' = 
+      return(data.table(LAB = n, M = M, qm = q))
+  )
+  
+  names(q) = paste0('Q', M, 'd')
+  q
 }           

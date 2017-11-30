@@ -87,8 +87,8 @@
     <p>Vypocet indikatoru</p>
     
 
-    <pre class="usage"><span class='fu'>indicators</span>(<span class='kw'>SPI_vars</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"P"</span>, <span class='st'>"R"</span>, <span class='st'>"RM"</span>, <span class='st'>"BF"</span>), <span class='kw'>SPEI_vars</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"PE"</span>),
-  <span class='kw'>DV_vars</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"P"</span>, <span class='st'>"SW"</span>, <span class='st'>"R"</span>, <span class='st'>"RM"</span>), <span class='kw'>DV_standardize</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>DV_thr</span> <span class='kw'>=</span> <span class='fl'>0.2</span>)</pre>
+    <pre class="usage"><span class='fu'>indicators</span>(<span class='kw'>SPI_vars</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"P"</span>, <span class='st'>"RM"</span>, <span class='st'>"BF"</span>), <span class='kw'>DV_standardize</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>DV_thr</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>DV_vars</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"P"</span>, <span class='st'>"RM"</span>, <span class='st'>"SW"</span>, <span class='st'>"GS"</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -98,20 +98,20 @@
       <td><p>promenne pro vypocet SPI</p></td>
     </tr>
     <tr>
-      <th>SPEI_vars</th>
-      <td><p>promenne pro vypocer SPEI</p></td>
-    </tr>
-    <tr>
-      <th>DV_vars</th>
-      <td><p>promenne pro vypocet nedostatkovych objemu</p></td>
-    </tr>
-    <tr>
       <th>DV_standardize</th>
       <td><p>maji se data nejdrive standardizovat?</p></td>
     </tr>
     <tr>
       <th>DV_thr</th>
       <td><p>prah pro vypocet nedostatkovych objemu</p></td>
+    </tr>
+    <tr>
+      <th>DV_vars</th>
+      <td><p>promenne pro vypocet nedostatkovych objemu</p></td>
+    </tr>
+    <tr>
+      <th>SPEI_vars</th>
+      <td><p>promenne pro vypocer SPEI</p></td>
     </tr>
     <tr>
       <th>tscale</th>
@@ -138,7 +138,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Petr Pavlik, Martin Martin.</p>
+  <p>Developed by Petr Pavlik, Martin Hanel.</p>
 </div>
 
 <div class="pkgdown">
