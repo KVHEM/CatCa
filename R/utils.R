@@ -141,3 +141,17 @@ MZP = Vectorize(function(id, mm_day = TRUE){
   if (Q355d <= 5.00) return(qmd(355)(id, mm_day = mm_day))
   return(0.5 * (qmd(355)(id, mm_day = mm_day) + qmd(364)(id, mm_day = mm_day)))
 })
+           
+           
+#' Vypocti m-denni vody z modelovanych dat
+#'
+#' @param RM modelovany prutok z bilanu
+#' @param M vektor m dnu
+#'
+#' @return kvantily m-dennich vod
+#' @export m_denni_bil
+#'
+#' @examples
+m_denni_bil <- function(RM, M) {
+  q = quantile(RM, 1-M/365.25) 
+}           
