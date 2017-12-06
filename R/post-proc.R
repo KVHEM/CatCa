@@ -94,7 +94,9 @@ bilan_agg = function(){
 #' Vypocet indikatoru
 #'
 #' @param SPI_vars promenne pro vypocet SPI
-#' @param SPEI_vars promenne pro vypocer SPEI
+#' @param B_vars promenne P - PET pro vypocet SPEI
+#' @param dVc_vars promenne pro vypocet dV
+#' @param dVn_vars promenne pro vypocet dV
 #' @param tscale meritko pro vypocet indikatoru
 #' @param DV_vars promenne pro vypocet nedostatkovych objemu
 #' @param DV_standardize maji se data nejdrive standardizovat?
@@ -104,80 +106,123 @@ bilan_agg = function(){
 #' @export indicators
 #'
 #' @examples
-indicators = function(SPI_vars = c('P', 'RM', 'BF'), DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'SW', 'GS')){
 
-  message('Pocitam indikatory.')
-  setwd(file.path(.datadir, 'postproc_stable'))
-  BM = data.table(readRDS('bilan_month.rds'))
-  ref = getOption('ref_period')
-  
-  # !! DO SOUBORU S INDIKATORY PROSIM ZAHRN I SLOUPEC ROK A SLOUPEC MESIC
-  
-  # SPI
+catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period')) {
   
   registerDoMC(cores = 4)
   
+  message('Pocitam SPI.')
+  setwd(file.path(.datadir, 'postproc_stable'))
+  BM = data.table(readRDS('bilan_month.rds'))
+
   S = foreach(i = getOption('ind_scales')) %dopar% {
     
     return(
       BM[variable %in% SPI_vars & !is.na(value)][, .(DTM, value = c(
         SPEI::spi(
-        ts(value, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
-        scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])))$fitted), 
+          ts(value, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
+          scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])))$fitted), 
+        scale = i), by = .(UPOV_ID, variable)])
+  }
+  
+  names(S) <- paste0('SPI_', getOption('ind_scales'))
+  S <- rbindlist(S, idcol = 'IID')
+  S <- cbind(S, month = month(S$DTM), year = year(S$DTM))
+  
+  setwd(file.path(.datadir, 'indikatory'))
+  saveRDS(S, 'spi.rds')
+  
+}
+
+catca_spei <- function(B_vars = c('P', 'PET'), ref = getOption('ref_period')) {
+
+  registerDoMC(cores = 4)
+    
+  message('Pocitam SPEI.')
+  setwd(file.path(.datadir, 'postproc_stable'))
+  BM = data.table(readRDS('bilan_month.rds'))
+
+  cbm = dcast.data.table(BM[variable %in% B_vars, .(UPOV_ID, DTM, variable, value)], UPOV_ID + DTM ~ variable)
+  cbm = cbm[complete.cases(P, PET)]
+  cbm[, B := P - PET]
+  
+  S = foreach(i = getOption('ind_scales')) %dopar% { 
+    
+    return(
+      cbm[variable == 'B' & !is.na(value)][, .(DTM, value = c(
+        SPEI::spei(
+          ts(value, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
+          scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])))$fitted), 
         scale = i), by = .(UPOV_ID, variable)])
     
   }
   
-  names(S) = paste0('SPI_', getOption('ind_scales'))
-  S = rbindlist(S, idcol = 'IID')
+  names(S) <- paste0('SPEI_', getOption('ind_scales'))
+  S <- rbindlist(S, idcol = 'IID')
+  S <- cbind(S, month = month(S$DTM), year = year(S$DTM))
   
   setwd(file.path(.datadir, 'indikatory'))
+  saveRDS(S, 'spei.rds')
+  
+}
 
-  saveRDS(S, 'spi.rds')
+catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'SW', 'GS'), ref = getOption('ref_period')) {
+  
+  message('Pocitam dV.')
+  setwd(file.path(.datadir, 'postproc_stable'))
+  BM = data.table(readRDS('bilan_month.rds'))
+  
+  def_vol_id = function(x, threshold = quantile(x, DV_thr, na.rm = TRUE), mit = 0, min.len = 0) { 
+    
+    nul = rle(x >= threshold)
+    cs = cumsum(nul$len)
+    nul$val[(nul$val == TRUE) & (nul$len < mit)] = FALSE
+    breaks = c(0, cs)#if (cs[1] == 1) (cs) else (c(1, cs))
+    fct = cut(1:length(x), breaks = breaks, inc = TRUE) 
+    
+    kde = rle(nul$val[as.integer(fct)])
+    kde$val[(kde$val == FALSE) & (kde$len < min.len)] = TRUE
+    cs = cumsum(kde$len)
+    breaks = c(0, cs) #if (cs[1] == 1) (cs) else (c(1, cs))
+    fct = as.integer(cut(1:length(x), breaks = breaks, inc = TRUE)) #, labels = 1:length(breaks))	)
+    kkde = which(kde$val)
+    fct[as.integer(fct) %in% kkde] = NA
+    
+    fct
+  }
+  
+  def_vol_val = function(dVc_vars = c('RM', 'P', 'BF'), dVn_vars = c('SW', 'GS')) {
+    
+    q = BM[variable == 'RM'] 
+    #def_vol(q$value, quantile(q$value, DV_thr))         
+    q[, THR := quantile(value, DV_thr), by = .(UPOV_ID, variable)]
+    q[, EID := def_vol_id(value, THR)]
+    q[!is.na(EID) & variable %in% dVc_vars, dV := cumsum(THR - value), by = .(UPOV_ID, variable, EID)]  
+    q[!is.na(EID) & variable %in% dVn_vars, dV := (THR - value), by = .(UPOV_ID, variable, EID)]
+    
+    q <- q[, .(UPOV_ID, year, month, EID, dV)]
+    #q <- q[!is.na(dV)]
+    
+    setwd(file.path(.datadir, 'indikatory'))
+    saveRDS(q, 'dV.rds')
+  } 
+  
+}
 
+indicators = function() {
+
+  message('Pocitam indikatory.')
+  
+  # SPI
+  catca_spi()
   
   # SPEI
-  cbm = dcast.data.table(BM[variable %in% c('P', 'PET'), .(UPOV_ID, DTM, variable, value)], UPOV_ID + DTM ~ variable)
-  cbm = cbm[complete.cases(P, PET)]
-  cbm[, B := P - PET]
-  # ...
-  
-  
-  # PDSI
-  
+  catca_spei()
   
   # dV
-    
-}
-
-# JE POTREBA DODELAT !!!
-def.vol.val = function(){
+  catca_dv()  
+ 
+  # PDSI
   
-  q = BM[variable == 'RM' & UPOV_ID == 'BER_0100']
-  def.vol(q$value, quantile(q$value, .2))
-  q[, THR := quantile(value, .2), by = .(UPOV_ID, variable)]
-  q[, EID := def.vol_id(value, THR)]
-  q[!is.na(EID) & variable %in% c('RM', 'P', 'BF'), dV := cumsum(THR - value), by = .(UPOV_ID, variable, EID)]
-  q[!is.na(EID) & variable %in% c('SW', 'GS'), dV := (THR - value), by = .(UPOV_ID, variable, EID)]
-  
-}
-
-def.vol_id = function(x, threshold = quantile(x, .2, na.rm = TRUE), mit = 0, min.len = 0){
-  
-  nul = rle(x >= threshold)
-  cs = cumsum(nul$len)
-  nul$val[ (nul$val==TRUE) & (nul$len<mit) ] = FALSE
-  breaks = c(0,cs)#if (cs[1]==1) (cs) else (c(1, cs))
-  fct = cut(1:length(x), breaks = breaks, inc = TRUE)
-  
-  kde = rle(nul$val[as.integer(fct)])
-  kde$val[ (kde$val == FALSE) & (kde$len<min.len)] = TRUE
-  cs = cumsum(kde$len)
-  breaks = c(0,cs)#if (cs[1]==1) (cs) else (c(1, cs))
-  fct = as.integer(cut(1:length(x), breaks = breaks, inc = TRUE))#, labels = 1:length(breaks))	)
-  kkde = which(kde$val)
-  fct[as.integer(fct)%in%kkde] = NA
-  
-  fct
 }
 
