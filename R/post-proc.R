@@ -89,24 +89,16 @@ bilan_agg = function(){
   gc()
 }
 
- 
-
-#' Vypocet indikatoru
+#' Vypocet SPI
 #'
 #' @param SPI_vars promenne pro vypocet SPI
-#' @param B_vars promenne P - PET pro vypocet SPEI
-#' @param dVc_vars promenne pro vypocet dV
-#' @param dVn_vars promenne pro vypocet dV
-#' @param tscale meritko pro vypocet indikatoru
-#' @param DV_vars promenne pro vypocet nedostatkovych objemu
-#' @param DV_standardize maji se data nejdrive standardizovat?
-#' @param DV_thr prah pro vypocet nedostatkovych objemu
+#' @param ref casove meritko pro vypocet
+#' @param i scale vypoctu indexu
 #'
-#' @return data.table s casovymi radami indikatoru
-#' @export indicators
+#' @return data.table s casovymi radami SPI
+#' @export SPI
 #'
 #' @examples
-
 catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period')) {
   
   registerDoMC(cores = 4)
@@ -134,6 +126,16 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
   
 }
 
+#' Vypocet SPEI
+#'
+#' @param B_vars promenne P - PET pro vypocet SPEI
+#' @param ref casove meritko pro vypocet
+#' @param i scale vypoctu indexu
+#'
+#' @return data.table s casovymi radami SPEI
+#' @export SPEI
+#'
+#' @examples
 catca_spei <- function(B_vars = c('P', 'PET'), ref = getOption('ref_period')) {
 
   registerDoMC(cores = 4)
@@ -166,6 +168,17 @@ catca_spei <- function(B_vars = c('P', 'PET'), ref = getOption('ref_period')) {
   
 }
 
+#' Vypocet deficitnich objemu
+#'
+#' @param DV_standardize maji se data nejdrive standardizovat?
+#' @param DV_thr prah pro vypocet nedostatkovych objemu
+#' @param DV_vars promenne pro vypocet nedostatkovych objemu
+#' @param ref casove meritko pro vypocet
+#' 
+#' @return data.table s casovymi radami dV + EID
+#' @export (dV + EID)
+#'
+#' @examples
 catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'SW', 'GS'), ref = getOption('ref_period')) {
   
   message('Pocitam dV.')
@@ -209,6 +222,22 @@ catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 
   
 }
 
+#' Vypocet indikatoru
+#'
+#' @param SPI_vars promenne pro vypocet SPI
+#' @param B_vars promenne P - PET pro vypocet SPEI
+#' @param dVc_vars promenne pro vypocet dV
+#' @param dVn_vars promenne pro vypocet dV
+#' @param ref casove meritko pro vypocet 
+#' @param i scale vypoctu indexu (SPI, SPEI)
+#' @param DV_vars promenne pro vypocet nedostatkovych objemu
+#' @param DV_standardize maji se data nejdrive standardizovat?
+#' @param DV_thr prah pro vypocet nedostatkovych objemu
+#'
+#' @return data.table s casovymi radami indikatoru
+#' @export indikatory
+#'
+#' @examples
 indicators = function() {
 
   message('Pocitam indikatory.')
