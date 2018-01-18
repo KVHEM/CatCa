@@ -24,4 +24,5 @@ Imports:
   raster,
   spatial,
   data.table,
-  magrittr
+  magrittr,
+  doParallel
