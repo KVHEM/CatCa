@@ -95,7 +95,7 @@ bilan_agg = function(){
 #' @param ref casove meritko pro vypocet
 #' @param i scale vypoctu indexu
 #'
-#' @return data.table s casovymi radami SPI
+#' @return data.table s koeficienty pro vypocet SPI
 #' @export cal_spi
 #'
 #' @examples
@@ -103,9 +103,11 @@ cal_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period')
   
   registerDoMC(cores = 4)
   
-  message('Pocitam SPI.')
+  message('Pocitam koeficienty pro SPI.')
   setwd(file.path(.datadir, 'postproc_stable'))
-  BM = data.table(readRDS('bilan_month.rds'))
+  if(!exists("BM")) {
+    BM <- data.table(readRDS('bilan_month.rds'))
+  }
   
   S = foreach(i = getOption('ind_scales')) %dopar% {
     
@@ -119,7 +121,6 @@ cal_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period')
   
   names(S) <- paste0('SPI_', getOption('ind_scales'))
   S <- rbindlist(S, idcol = 'IID')
-  #S <- cbind(S, month = month(S$DTM), year = year(S$DTM))
   
   setwd(file.path(.datadir, 'indikatory'))
   saveRDS(S, 'spi_coef.rds')
@@ -142,15 +143,19 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
   
   message('Pocitam SPI.')
   setwd(file.path(.datadir, 'postproc_stable'))
-  BM = data.table(readRDS('bilan_month.rds'))
+  if(!exists("BM")) {
+    BM <- data.table(readRDS('bilan_month.rds'))
+  }
+  
   #pz = BM[, .(pze = sum(value==0)/.N), by = .(UPOV_ID, variable) ]
   pze = 0
   setwd(file.path(.datadir, 'indikatory'))
+  
   Scoef = readRDS('spi_coef.rds')
   id = Scoef[, any(is.na(value[[1]])), by = .(UPOV_ID, scale, variable)][V1==TRUE, unique(UPOV_ID)]
   
-  getCoe = function(upov_id, Scale, var){
-    Scoef[UPOV_ID==upov_id & scale == Scale & variable == var, value[[1]]]
+  getCoef = function(upov_id, Scale, var){
+    Scoef[UPOV_ID == upov_id & scale == Scale & variable == var, value[[1]]]
   }
   
   S = foreach(i = getOption('ind_scales')) %dopar% {
@@ -159,7 +164,7 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
       BM[variable %in% SPI_vars & !is.na(value) & !UPOV_ID%in%id][, .(DTM, value = c(
         SPEI::spi(
           ts(value, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
-          scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])), params = getCoe(UPOV_ID[1], i, variable[1]))$fitted), 
+          scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])), params = getCoef(UPOV_ID[1], i, variable[1]))$fitted), 
         scale = i), by = .(UPOV_ID, variable)])
   }
   
@@ -169,6 +174,49 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
   
   setwd(file.path(.datadir, 'indikatory'))
   saveRDS(S, 'spi.rds')
+  
+}
+
+#' Kalibrace SPEI
+#'
+#' @param B_vars promenne P - PET pro vypocet SPEI
+#' @param ref casove meritko pro vypocet
+#' @param i scale vypoctu indexu
+#'
+#' @return data.table s koeficienty pro SPEI
+#' @export catca_spei
+#'
+#' @examples
+cal_spei <- function(ref = getOption('ref_period')) {
+  
+  registerDoMC(cores = 4)
+  
+  message('Pocitam koeficienty pro SPEI.')
+  setwd(file.path(.datadir, 'postproc_stable'))
+  if(!exists("BM")) {
+    BM <- data.table(readRDS('bilan_month.rds'))
+  }
+  
+  cbm = dcast.data.table(BM[variable %in% c("P", "PET"), .(UPOV_ID, DTM, variable, value, year, month)], UPOV_ID + DTM + year + month ~ variable)
+  cbm = cbm[complete.cases(P, PET)]
+  cbm[, B := P - PET] 
+  
+  S = foreach(i = getOption('ind_scales')) %dopar% { 
+    
+    return(
+      cbm[ !is.na(B)][, .(value = list(
+        SPEI::spei(
+          ts(B, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
+          scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])))$coef), 
+        scale = i), by = .(UPOV_ID)])
+    
+  }
+  
+  names(S) <- paste0('SPEI_', getOption('ind_scales'))
+  S <- rbindlist(S, idcol = 'IID')
+  
+  setwd(file.path(.datadir, 'indikatory'))
+  saveRDS(S, 'spei_coef.rds')
   
 }
 
@@ -188,19 +236,28 @@ catca_spei <- function(ref = getOption('ref_period')) {
     
   message('Pocitam SPEI.')
   setwd(file.path(.datadir, 'postproc_stable'))
-  BM = data.table(readRDS('bilan_month.rds'))
-
+  if(!exists("BM")) {
+    BM <- data.table(readRDS('bilan_month.rds'))
+  }
+  
   cbm = dcast.data.table(BM[variable %in% c("P", "PET"), .(UPOV_ID, DTM, variable, value, year, month)], UPOV_ID + DTM + year + month ~ variable)
   cbm = cbm[complete.cases(P, PET)]
   cbm[, B := P - PET]
   
+  Scoef = readRDS('spei_coef.rds')
+  id = Scoef[, any(is.na(value[[1]])), by = .(UPOV_ID, scale)][V1==TRUE, unique(UPOV_ID)]
+  
+  getCoef = function(upov_id, Scale){
+    Scoef[UPOV_ID == upov_id & scale == Scale, value[[1]]]
+  }
+  
   S = foreach(i = getOption('ind_scales')) %dopar% { 
     
     return(
-      cbm[ !is.na(B)][, .(DTM, value = c(
+      cbm[!is.na(B) & !UPOV_ID%in%id][, .(DTM, value = c(
         SPEI::spei(
           ts(B, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
-          scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])))$fitted), 
+          scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])), params = getCoef(UPOV_ID[1], i))$fitted), 
         scale = i), by = .(UPOV_ID)])
     
   }
@@ -211,6 +268,41 @@ catca_spei <- function(ref = getOption('ref_period')) {
   
   setwd(file.path(.datadir, 'indikatory'))
   saveRDS(S, 'spei.rds')
+  
+}
+
+#' Kalibrace deficitnich objemu
+#'
+#' @param DV_standardize maji se data nejdrive standardizovat?
+#' @param DV_thr prah pro vypocet nedostatkovych objemu
+#' @param DV_vars promenne pro vypocet nedostatkovych objemu
+#' @param ref casove meritko pro vypocet
+#' 
+#' @return data.table s thresholdy vars pro jednotlive UPOVy pro vypocet dV
+#' @export cal_dv
+#'
+#' @examples
+cal_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'BF', 'SW', 'GS'), ref = getOption('ref_period')) {
+  
+  message('Pocitam thresholdy pro dV.')
+  setwd(file.path(.datadir, 'postproc_stable'))
+  if(!exists("BM")) {
+    BM <- data.table(readRDS('bilan_month.rds'))
+  }
+  
+  def_vol_val = function(dVc_vars = c('RM', 'P', 'BF'), dVn_vars = c('SW', 'GS')) {
+    
+    q = BM[variable %in% c(dVc_vars, dVn_vars)] 
+    #def_vol(q$value, quantile(q$value, DV_thr))
+    q$value <- replace(q$value, is.na(q$value), 0)
+    
+    q[, THR := quantile(value, DV_thr), by = .(UPOV_ID, variable)]
+    q <- unique(q[, .(UPOV_ID, variable, THR)])
+    #q <- q[!is.na(dV)]
+    
+    setwd(file.path(.datadir, 'indikatory'))
+    saveRDS(q, 'dV_thr.rds')
+  } 
   
 }
 
@@ -225,13 +317,15 @@ catca_spei <- function(ref = getOption('ref_period')) {
 #' @export catca_dv
 #'
 #' @examples
-catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'SW', 'GS'), ref = getOption('ref_period')) {
+catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'BF', 'SW', 'GS'), ref = getOption('ref_period')) {
   
   message('Pocitam dV.')
   setwd(file.path(.datadir, 'postproc_stable'))
-  BM = data.table(readRDS('bilan_month.rds'))
+  if(!exists("BM")) {
+    BM <- data.table(readRDS('bilan_month.rds'))
+  }
   
-  def_vol_id = function(x, threshold = quantile(x, DV_thr, na.rm = TRUE), mit = 0, min.len = 0) { 
+  def_vol_id = function(x, threshold, mit = 0, min.len = 0) { 
     
     nul = rle(x >= threshold)
     cs = cumsum(nul$len)
@@ -252,14 +346,18 @@ catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 
   
   def_vol_val = function(dVc_vars = c('RM', 'P', 'BF'), dVn_vars = c('SW', 'GS')) {
     
-    q = BM[variable == 'RM'] 
-    #def_vol(q$value, quantile(q$value, DV_thr))         
-    q[, THR := quantile(value, DV_thr), by = .(UPOV_ID, variable)]
+    q = BM[variable %in% c(dVc_vars, dVn_vars)] 
+    #def_vol(q$value, quantile(q$value, DV_thr))
+    q$value <- replace(q$value, is.na(q$value), 0)
+    q_thr <- readRDS("dv_thr.rds")
+    
+    q <- merge(q, q_thr, by = c("UPOV_ID", "variable"))
+    
     q[, EID := def_vol_id(value, THR)]
     q[!is.na(EID) & variable %in% dVc_vars, dV := cumsum(THR - value), by = .(UPOV_ID, variable, EID)]  
     q[!is.na(EID) & variable %in% dVn_vars, dV := (THR - value), by = .(UPOV_ID, variable, EID)]
     
-    q <- q[, .(UPOV_ID, year, month, EID, dV)]
+    q <- q[, .(UPOV_ID, year, month, variable, EID, dV)]
     #q <- q[!is.na(dV)]
     
     setwd(file.path(.datadir, 'indikatory'))
@@ -288,13 +386,19 @@ indicators = function() {
 
   message('Pocitam indikatory.')
   
+  setwd(file.path(.datadir, 'postproc_stable'))
+  BM <- data.table(readRDS('bilan_month.rds'))
+  
   # SPI
+  cal_spi()
   catca_spi()
   
   # SPEI
+  cal_spei()
   catca_spei()
   
   # dV
+  cal_dv()
   catca_dv()  
  
   # PDSI
