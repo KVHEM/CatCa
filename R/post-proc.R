@@ -96,7 +96,7 @@ bilan_agg = function(){
 #' @param i scale vypoctu indexu
 #'
 #' @return data.table s casovymi radami SPI
-#' @export SPI
+#' @export catca_spi
 #'
 #' @examples
 catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period')) {
@@ -133,7 +133,7 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
 #' @param i scale vypoctu indexu
 #'
 #' @return data.table s casovymi radami SPEI
-#' @export SPEI
+#' @export catca_spei
 #'
 #' @examples
 catca_spei <- function(B_vars = c('P', 'PET'), ref = getOption('ref_period')) {
@@ -176,7 +176,7 @@ catca_spei <- function(B_vars = c('P', 'PET'), ref = getOption('ref_period')) {
 #' @param ref casove meritko pro vypocet
 #' 
 #' @return data.table s casovymi radami dV + EID
-#' @export (dV + EID)
+#' @export catca_dv
 #'
 #' @examples
 catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'SW', 'GS'), ref = getOption('ref_period')) {
@@ -235,7 +235,7 @@ catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 
 #' @param DV_thr prah pro vypocet nedostatkovych objemu
 #'
 #' @return data.table s casovymi radami indikatoru
-#' @export indikatory
+#' @export indicators
 #'
 #' @examples
 indicators = function() {
