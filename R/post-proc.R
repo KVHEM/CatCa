@@ -149,8 +149,8 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
   
   #pz = BM[, .(pze = sum(value==0)/.N), by = .(UPOV_ID, variable) ]
   pze = 0
-  setwd(file.path(.datadir, 'indikatory'))
   
+  setwd(file.path(.datadir, 'indikatory'))
   Scoef = readRDS('spi_coef.rds')
   id = Scoef[, any(is.na(value[[1]])), by = .(UPOV_ID, scale, variable)][V1==TRUE, unique(UPOV_ID)]
   
@@ -244,6 +244,7 @@ catca_spei <- function(ref = getOption('ref_period')) {
   cbm = cbm[complete.cases(P, PET)]
   cbm[, B := P - PET]
   
+  setwd(file.path(.datadir, 'indikatory'))
   Scoef = readRDS('spei_coef.rds')
   id = Scoef[, any(is.na(value[[1]])), by = .(UPOV_ID, scale)][V1==TRUE, unique(UPOV_ID)]
   
@@ -349,10 +350,11 @@ catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 
     q = BM[variable %in% c(dVc_vars, dVn_vars)] 
     #def_vol(q$value, quantile(q$value, DV_thr))
     q$value <- replace(q$value, is.na(q$value), 0)
+    
+    setwd(file.path(.datadir, 'indikatory'))
     q_thr <- readRDS("dv_thr.rds")
     
     q <- merge(q, q_thr, by = c("UPOV_ID", "variable"))
-    
     q[, EID := def_vol_id(value, THR)]
     q[!is.na(EID) & variable %in% dVc_vars, dV := cumsum(THR - value), by = .(UPOV_ID, variable, EID)]  
     q[!is.na(EID) & variable %in% dVn_vars, dV := (THR - value), by = .(UPOV_ID, variable, EID)]
