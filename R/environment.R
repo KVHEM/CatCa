@@ -62,6 +62,9 @@ switch(where,
        'DESKTOP-IDM6O5J' = {
          .datadir = "C:\\Users\\Zenbook\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
          .workdir = ""
+       },
+       "telly" = {
+         .datadir = "/home/owc/BILAN_UPOV/used_data/"
        }
 )
 

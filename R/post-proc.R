@@ -89,6 +89,43 @@ bilan_agg = function(){
   gc()
 }
 
+#' Kalibruj SPI
+#'
+#' @param SPI_vars promenne pro vypocet SPI
+#' @param ref casove meritko pro vypocet
+#' @param i scale vypoctu indexu
+#'
+#' @return data.table s casovymi radami SPI
+#' @export cal_spi
+#'
+#' @examples
+cal_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period')) {
+  
+  registerDoMC(cores = 4)
+  
+  message('Pocitam SPI.')
+  setwd(file.path(.datadir, 'postproc_stable'))
+  BM = data.table(readRDS('bilan_month.rds'))
+  
+  S = foreach(i = getOption('ind_scales')) %dopar% {
+    
+    return(
+      BM[variable %in% SPI_vars & !is.na(value)][, .(value = list(
+        SPEI::spi(
+          ts(value, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
+          scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])))$coef), 
+        scale = i), by = .(UPOV_ID, variable)])
+  }
+  
+  names(S) <- paste0('SPI_', getOption('ind_scales'))
+  S <- rbindlist(S, idcol = 'IID')
+  #S <- cbind(S, month = month(S$DTM), year = year(S$DTM))
+  
+  setwd(file.path(.datadir, 'indikatory'))
+  saveRDS(S, 'spi_coef.rds')
+  
+}
+
 #' Vypocet SPI
 #'
 #' @param SPI_vars promenne pro vypocet SPI
@@ -106,14 +143,23 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
   message('Pocitam SPI.')
   setwd(file.path(.datadir, 'postproc_stable'))
   BM = data.table(readRDS('bilan_month.rds'))
-
+  #pz = BM[, .(pze = sum(value==0)/.N), by = .(UPOV_ID, variable) ]
+  pze = 0
+  setwd(file.path(.datadir, 'indikatory'))
+  Scoef = readRDS('spi_coef.rds')
+  id = Scoef[, any(is.na(value[[1]])), by = .(UPOV_ID, scale, variable)][V1==TRUE, unique(UPOV_ID)]
+  
+  getCoe = function(upov_id, Scale, var){
+    Scoef[UPOV_ID==upov_id & scale == Scale & variable == var, value[[1]]]
+  }
+  
   S = foreach(i = getOption('ind_scales')) %dopar% {
     
     return(
-      BM[variable %in% SPI_vars & !is.na(value)][, .(DTM, value = c(
+      BM[variable %in% SPI_vars & !is.na(value) & !UPOV_ID%in%id][, .(DTM, value = c(
         SPEI::spi(
           ts(value, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
-          scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])))$fitted), 
+          scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])), params = getCoe(UPOV_ID[1], i, variable[1]))$fitted), 
         scale = i), by = .(UPOV_ID, variable)])
   }
   
@@ -136,7 +182,7 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
 #' @export catca_spei
 #'
 #' @examples
-catca_spei <- function(B_vars = c('P', 'PET'), ref = getOption('ref_period')) {
+catca_spei <- function(ref = getOption('ref_period')) {
 
   registerDoMC(cores = 4)
     
@@ -144,18 +190,18 @@ catca_spei <- function(B_vars = c('P', 'PET'), ref = getOption('ref_period')) {
   setwd(file.path(.datadir, 'postproc_stable'))
   BM = data.table(readRDS('bilan_month.rds'))
 
-  cbm = dcast.data.table(BM[variable %in% B_vars, .(UPOV_ID, DTM, variable, value)], UPOV_ID + DTM ~ variable)
+  cbm = dcast.data.table(BM[variable %in% c("P", "PET"), .(UPOV_ID, DTM, variable, value, year, month)], UPOV_ID + DTM + year + month ~ variable)
   cbm = cbm[complete.cases(P, PET)]
   cbm[, B := P - PET]
   
   S = foreach(i = getOption('ind_scales')) %dopar% { 
     
     return(
-      cbm[variable == 'B' & !is.na(value)][, .(DTM, value = c(
+      cbm[ !is.na(B)][, .(DTM, value = c(
         SPEI::spei(
-          ts(value, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
+          ts(B, frequency = 12, start = c(year[1], month[1]), end = c(year[.N], month[.N])), 
           scale = i, ref.start = c(year(ref[1]), month(ref[1])), ref.end = c(year(ref[2]), month(ref[2])))$fitted), 
-        scale = i), by = .(UPOV_ID, variable)])
+        scale = i), by = .(UPOV_ID)])
     
   }
   
