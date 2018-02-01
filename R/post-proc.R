@@ -184,7 +184,7 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
 #' @param i scale vypoctu indexu
 #'
 #' @return data.table s koeficienty pro SPEI
-#' @export catca_spei
+#' @export cal_spei
 #'
 #' @examples
 cal_spei <- function(ref = getOption('ref_period')) {
