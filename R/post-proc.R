@@ -368,6 +368,42 @@ catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 
   
 }
 
+#' Kalibrace indikatoru
+#'
+#' @param SPI_vars promenne pro vypocet SPI
+#' @param B_vars promenne P - PET pro vypocet SPEI
+#' @param dVc_vars promenne pro vypocet dV
+#' @param dVn_vars promenne pro vypocet dV
+#' @param ref casove meritko pro vypocet 
+#' @param i scale vypoctu indexu (SPI, SPEI)
+#' @param DV_vars promenne pro vypocet nedostatkovych objemu
+#' @param DV_standardize maji se data nejdrive standardizovat?
+#' @param DV_thr prah pro vypocet nedostatkovych objemu
+#'
+#' @return data.table s kalibracnimi parametry pro vypocet indikatoru
+#' @export cal_indicators
+#'
+#' @examples
+cal_indicators = function() {
+  
+  message('Kalibruji indikatory.')
+  
+  setwd(file.path(.datadir, 'postproc_stable'))
+  BM <- data.table(readRDS('bilan_month.rds'))
+  
+  # SPI
+  cal_spi()
+  
+  # SPEI
+  cal_spei()
+  
+  # dV
+  cal_dv()
+  
+  # PDSI
+  
+}
+
 #' Vypocet indikatoru
 #'
 #' @param SPI_vars promenne pro vypocet SPI
@@ -392,15 +428,12 @@ indicators = function() {
   BM <- data.table(readRDS('bilan_month.rds'))
   
   # SPI
-  cal_spi()
   catca_spi()
   
   # SPEI
-  cal_spei()
   catca_spei()
   
   # dV
-  cal_dv()
   catca_dv()  
  
   # PDSI
