@@ -93,7 +93,8 @@ switch(where,
   op <- options()
   op.catca <- list(
     'ind_scales' = c(1, 3, 6, 9, 12),
-    'ref_period' = as.Date(c('1981-01-01', '2010-12-31'))
+    'ref_period' = as.Date(c('1981-01-01', '2010-12-31')),
+    cores_num = detectCores() - 1
   )
   toset <- !(names(op.catca) %in% names(op))
   if(any(toset)) options(op.catca[toset])

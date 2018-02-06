@@ -34,6 +34,9 @@ post_process = function(aggregate = TRUE, indicators = TRUE){
 #'
 #' @examples
 bilan_gen <- function(UPOVS){
+
+  registerDoParallel(cl)
+
   foreach(i = 1:length(UPOVS)) %dopar% {
     UPOV_PARS <- readRDS(file.path(.datadir, 'pars/pars.rds'))[UPOVS[i]]
     UPOV_AMETEO <- as.data.table(readRDS(file.path(.datadir, 'ameteo61-16', paste0(UPOVS[i], '.rds'))))
@@ -68,7 +71,7 @@ bilan_agg = function(){
 
   # i = d[1]
   #for (i in d){
-  registerDoMC(cores = 4)
+  registerDoMC(detectCores() - 1)
   M = foreach(i = d) %dopar% {
 
       #setTxtProgressBar(pb, length(M)+1)

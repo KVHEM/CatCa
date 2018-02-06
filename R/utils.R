@@ -28,45 +28,45 @@ A = Vectorize(function(id, upov_only = FALSE){
 #'
 #' @examples
 q2mm_day = Vectorize(function(q, id, ...){
-  
-  area = A(id, ...) * 1000000
-  
- unname((1000 * q * 3600 * 24) / (area))
-  
-})
 
-#' @describeIn q2mm_day 
-#' @export mm_day2q
-mm_day2q = Vectorize(function(mm, id, ...){
-  
   area = A(id, ...) * 1000000
-  unname((mm * area) / (1000 * 3600 * 24))
-  
+
+ unname((1000 * q * 3600 * 24) / (area))
+
 })
 
 #' @describeIn q2mm_day
-#' @export u2mm_day 
+#' @export mm_day2q
+mm_day2q = Vectorize(function(mm, id, ...){
+
+  area = A(id, ...) * 1000000
+  unname((mm * area) / (1000 * 3600 * 24))
+
+})
+
+#' @describeIn q2mm_day
+#' @export u2mm_day
 u2mm_day = function(u, id, dtm = NA, ...){
 
   area = A(id, ...) * 1000000
-  
-  uu = u / area 
+
+  uu = u / area
   if (any(is.na(dtm))) return(uu/30.4375)
-  
+
   uu/days_in_month(dtm)
-  
+
 }
 
-#' @describeIn q2mm_day 
+#' @describeIn q2mm_day
 #' @export u2mm_month
 u2mm_month = function(u, id, ...){
-  
+
   area = A(id, ...) * 1000000
-  
-  uu = u / area 
-  
+
+  uu = u / area
+
   uu
-  
+
 }
 
 #' Ziskej charakteristiky pro UPOV
@@ -90,7 +90,7 @@ char = function(id){
 #'
 #' @examples
 #' ch(Qa)
-#' 
+#'
 #' \dontrun{
 #' ch(Qa)(id = c('BER_0100', 'BER_0010'))
 #' }
@@ -120,7 +120,7 @@ qmd = function(m){
 
 
 
-#' Vypocti minimalni zustatkovy prutok 
+#' Vypocti minimalni zustatkovy prutok
 #'
 #' @param id UPOV_ID
 #' @param mm_day (logical) ma byt vysledek v mm_den nebo m3/s
@@ -130,19 +130,19 @@ qmd = function(m){
 #'
 #' @examples
 MZP = Vectorize(function(id, mm_day = TRUE){
-  
+
   ch = char(id)
   if (nrow(ch)==0) return(NA_real_)
   Q355d = qmd(355)(id, mm_day = FALSE) #ch[, mm_day2q(Q355d, id) / 365.25]
   if (is.na(Q355d)) return(NA_real_)
-  
+
   if (Q355d <= 0.05) return(qmd(330)(id, mm_day = mm_day))
   if (Q355d <= 0.50) return(0.5 * (qmd(330)(id, mm_day = mm_day) + qmd(355)(id, mm_day = mm_day)))
   if (Q355d <= 5.00) return(qmd(355)(id, mm_day = mm_day))
   return(0.5 * (qmd(355)(id, mm_day = mm_day) + qmd(364)(id, mm_day = mm_day)))
 })
-           
-           
+
+
 #' Vypocti m-denni vody
 #'
 #' @param RM modelovany/pozorovany prutok
@@ -154,18 +154,42 @@ MZP = Vectorize(function(id, mm_day = TRUE){
 #'
 #' @examples
 mdq <- function(RM, M = c(30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 355, 364), return = 'vector') {
-  q = quantile(RM, 1-M/365.25) 
+  q = quantile(RM, 1-M/365.25)
   n = paste0('Q', M, 'd')
-  switch(return, 
-    'vector' =  {    
+  switch(return,
+    'vector' =  {
       names(q) = n
       return(q)},
-    'matrix' = 
+    'matrix' =
       return(matrix(c(M = M, qm = q), ncol = 2, dimnames = list(n, c('M', 'QM')) )),
-    'data.table' = 
+    'data.table' =
       return(data.table(LAB = n, M = M, qm = q))
   )
-  
+
   names(q) = paste0('Q', M, 'd')
   q
-}           
+}
+
+#' Vytvor cluster pro foreach
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_cluster <- function() {
+  if (.Platform[["OS.type"]] == 'unix') {
+    registerDoParallel(cores = .Options$cores_num)
+    return(NULL)
+  } else {
+    cl <- makeCluster(.Options$cores_num)
+    registerDoParallel(cl)
+    return(cl)
+  }
+}
+
+
+
+
+
+
+
