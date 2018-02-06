@@ -35,7 +35,7 @@ post_process = function(aggregate = TRUE, indicators = TRUE){
 #' @examples
 bilan_gen <- function(UPOVS){
 
-  registerDoParallel(cl)
+  stop_cluster <- create_cluster()
 
   foreach(i = 1:length(UPOVS)) %dopar% {
     UPOV_PARS <- readRDS(file.path(.datadir, 'pars/pars.rds'))[UPOVS[i]]
@@ -43,18 +43,20 @@ bilan_gen <- function(UPOVS){
     UPOV_AMETEO <- UPOV_AMETEO[DTM >= '1982-11-01' & DTM <= '2010-10-31', ]
 
     bil <- bil.new(type = "D")
-    bil.set.params.curr(model = bil, params = UPOV_PARS[[UPOVS]]$pars$current[1:6])
+    bil.set.params.curr(model = bil, params = UPOV_PARS$pars$current[1:6])
     bil.set.values(     model = bil,
-                   input_vars = data.frame(P = UPOV_AMETEO$Rain,
-                                           T = UPOV_AMETEO$Tavg),
+                   input_vars = data.frame(P = UPOV_AMETEO[], # eval[]
+                                           T = UPOV_AMETEO[]),
                     init_date = '1982-11-01',
                        append = FALSE)
     bil.pet(bil)
     bil.run(bil)
     TSERIES_BIL <- bil.get.values(bil)
 
-    saveRDS(TSERIES_BIL, file.path(.datadir, paste0('bilan/', UPOVS, '.rds')))
+    saveRDS(TSERIES_BIL, file.path(.datadir, paste0('bilan/', UPOVS[i], '.rds')))
   }
+
+  stop_cluster()
 }
 
 #' Agreguje data z used_data/bilan na mesicni a tydenni krok, ulozi vysledek do used_data/postproc
@@ -71,7 +73,9 @@ bilan_agg = function(){
 
   # i = d[1]
   #for (i in d){
-  registerDoMC(detectCores() - 1)
+
+  stop_cluster <- create_cluster()
+
   M = foreach(i = d) %dopar% {
 
       #setTxtProgressBar(pb, length(M)+1)
@@ -95,6 +99,8 @@ bilan_agg = function(){
       # W[[length(M)+1]] = w
 
   }
+
+  stop_cluster()
 
   names(M) = gsub('\\.rds', '', d)
   BM = rbindlist(M, idcol = 'UPOV_ID')
@@ -122,7 +128,7 @@ bilan_agg = function(){
 #' @examples
 cal_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period')) {
 
-  registerDoMC(cores = 4)
+  stop_cluster <- create_cluster()
 
   message('Pocitam koeficienty pro SPI.')
   setwd(file.path(.datadir, 'postproc_stable'))
@@ -146,6 +152,7 @@ cal_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period')
   setwd(file.path(.datadir, 'indikatory'))
   saveRDS(S, 'spi_coef.rds')
 
+  stop_cluster()
 }
 
 #' Vypocet SPI
@@ -160,7 +167,7 @@ cal_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period')
 #' @examples
 catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period')) {
 
-  registerDoMC(cores = 4)
+  stop_cluster <- create_cluster()
 
   message('Pocitam SPI.')
   setwd(file.path(.datadir, 'postproc_stable'))
@@ -196,6 +203,8 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
   setwd(file.path(.datadir, 'indikatory'))
   saveRDS(S, 'spi.rds')
 
+  stop_cluster()
+
 }
 
 #' Kalibrace SPEI
@@ -210,7 +219,7 @@ catca_spi <- function(SPI_vars = c('P', 'RM', 'BF'), ref = getOption('ref_period
 #' @examples
 cal_spei <- function(ref = getOption('ref_period')) {
 
-  registerDoMC(cores = 4)
+  stop_cluster <- create_cluster()
 
   message('Pocitam koeficienty pro SPEI.')
   setwd(file.path(.datadir, 'postproc_stable'))
@@ -239,6 +248,8 @@ cal_spei <- function(ref = getOption('ref_period')) {
   setwd(file.path(.datadir, 'indikatory'))
   saveRDS(S, 'spei_coef.rds')
 
+  stop_cluster()
+
 }
 
 #' Vypocet SPEI
@@ -253,7 +264,7 @@ cal_spei <- function(ref = getOption('ref_period')) {
 #' @examples
 catca_spei <- function(ref = getOption('ref_period')) {
 
-  registerDoMC(cores = 4)
+  stop_cluster <- create_cluster()
 
   message('Pocitam SPEI.')
   setwd(file.path(.datadir, 'postproc_stable'))
@@ -291,6 +302,7 @@ catca_spei <- function(ref = getOption('ref_period')) {
   setwd(file.path(.datadir, 'indikatory'))
   saveRDS(S, 'spei.rds')
 
+  stop_cluster()
 }
 
 #' Kalibrace deficitnich objemu

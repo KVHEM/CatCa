@@ -9,7 +9,7 @@
 #' }
 #'
 #' @usage give_paths
-#' @return Přiřadí do \code{.GlobalEnv} proměnné \code{.datadir} a \code{.workdir}
+#' @return Přiřadí do \code{.GlobalEnv} proměnné \code{.datadir}, \code{.workdir} a \code{.where}
 #' @export give_paths
 give_paths <- function(){
 where <- if(.Platform[["OS.type"]] == 'unix') (Sys.info()['nodename']) else (Sys.getenv('COMPUTERNAME'))
@@ -84,6 +84,7 @@ switch(where,
 
   assign('.datadir', .datadir, envir = .GlobalEnv)
   assign('.workdir', .workdir, envir = .GlobalEnv)
+  assign('.where', where, envir = .GlobalEnv)
 }
 
 

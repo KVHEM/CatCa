@@ -170,22 +170,35 @@ mdq <- function(RM, M = c(30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 35
   q
 }
 
-#' Vytvor cluster pro foreach
+#' Vytvori cluster pro foreach
 #'
-#' @return
-#' @export
+#' Vytvori cluster pro foreach podle platformy, vrati stopovaci funkci.
+#'
+#' @return Funkce zastavujici cluster.
+#' @export create_cluster
 #'
 #' @examples
+#'
+#' stop_cluster <- create_cluster()
+#' getDoParWorkers()
+#' stop_cluster()
+#'
 create_cluster <- function() {
-  if (.Platform[["OS.type"]] == 'unix') {
+  if (.where == 'unix') {
     registerDoParallel(cores = .Options$cores_num)
-    return(NULL)
+    return(function() message("Cluster zastaven."))
   } else {
     cl <- makeCluster(.Options$cores_num)
     registerDoParallel(cl)
-    return(cl)
+    message("Vytvoren cluster.")
+    return(function() {
+      stopCluster(cl)
+      message("Cluster zastaven.")
+    })
+
   }
 }
+
 
 
 
