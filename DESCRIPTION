@@ -1,27 +1,32 @@
 Package: CatCa
 Type: Package
 Title: The package serves as proxy for CZ waterbodies calibration with BILAN model
-Version: 0.1.0
-Authors@R: c(person(given = "Petr", family = "Pavlik", email = "pavlikpetr@fzp.czu.cz", role = c("aut", "cre")), person(given = "Martin", family = "Martin", role = "aut", email = "hanel@fzp.czu.cz"))
+Version: 0.1.1
+Authors@R: c(person(given = "Petr", family = "Pavlik", email = "pavlikpetr@fzp.czu.cz", role = c("aut", "cre")), person(given = "Martin", family = "Hanel", role = "aut", email = "hanel@fzp.czu.cz"))
 Description: Contains functions for calibration based both on the order of waterbody in cascade 
   and unique identifier of the waterbody.
 Depends: R (>= 3.3.0),
-        readxl,
+  bilan,
+  readxl,
  	rgeos,
  	rgdal,
-  	raster,
-  	spatial,
-  	data.table,
-  	magrittr
+  raster,
+  spatial,
+  data.table,
+  magrittr,
+  doParallel,
+  SPEI
 License: MIT
 Encoding: UTF-8
 LazyData: false
 RoxygenNote: 6.0.1
 Imports:
+  bilan,
   readxl,
   rgeos,
   rgdal,
   raster,
   spatial,
   data.table,
-  magrittr
+  magrittr,
+  doParallel

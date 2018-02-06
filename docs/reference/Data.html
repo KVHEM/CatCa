@@ -125,11 +125,20 @@
     
     <p><strong>TABA</strong> (data.table): Tabulka následnosti povodí</p><ul>
 <li><p>FROM: UPOV_ID odkud (tece voda)</p></li>
-<li><p>TO: UPOV_ID kam (tece voda)</p></li>
+<li><p>TO: UPOV_ID kam (tece voda), -9999 = mimo republiku</p></li>
+<li><p>FR_ORD, TO_ORD: rady toku</p></li>
+<li><p>UPOV_AREA: plocha povodi - jen UPOV</p></li>
+<li><p>TOTAL_AREA: celkova plocha povodi - az k prameni - v soucasnosti pro povodi Ohre a ostatni nedodana povodi dopocteno jako suma UPOV_AREA - nekde to muze byt uplne blbe</p></li>
 </ul><p><strong>TABB</strong> (data.table): Tabulka vsech hornich povodi pro danny UPOV</p><ul>
 <li><p>FROM:</p></li>
 <li><p>TO:</p></li>
-</ul><p><strong>TABNAD</strong> (data.table): Tabulka charakteristik nadrží</p>
+</ul><p><strong>TABNAD</strong> (data.table): Tabulka charakteristik nadrží</p><ul>
+<li><p>UPOV_ID - UPOV_ID</p></li>
+</ul><p><strong>TABREKY</strong> (data.table): Tabulka delek rek pro HYPE</p><ul>
+<li><p>UPOV_ID - UPOV_ID</p></li>
+<li><p>L_HTOK: delka hlavniho toku v metrech</p></li>
+<li><p>L_VTOK: delka vedlejsich toku v metrech</p></li>
+</ul>
     
     <h2 class="hasAnchor" id="data-uziv-"><a class="anchor" href="#data-uziv-"></a>Data(uziv06)</h2>
 
@@ -149,7 +158,7 @@
 <li><p>?</p></li>
 </ul>
     
-    <h2 class="hasAnchor" id="data-webapp-geo-"><a class="anchor" href="#data-webapp-geo-"></a>Data(webapp_geo)</h2>
+    <h2 class="hasAnchor" id="data-webapp-data-"><a class="anchor" href="#data-webapp-data-"></a>Data(webapp_data)</h2>
 
     
     <p><strong>JEZERA</strong></p><ul>
@@ -181,7 +190,7 @@
 
       <li><a href="#data-uziv-">Data(uziv79)</a></li>
 
-      <li><a href="#data-webapp-geo-">Data(webapp_geo)</a></li>
+      <li><a href="#data-webapp-data-">Data(webapp_data)</a></li>
           </ul>
 
   </div>
@@ -189,7 +198,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Petr Pavlik, Martin Martin.</p>
+  <p>Developed by Petr Pavlik, Martin Hanel.</p>
 </div>
 
 <div class="pkgdown">

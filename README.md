@@ -12,3 +12,5 @@ Pro instalaci použij
 ``` r
 devtools::install_github("KVHEM/CatCa")
 ```
+
+Dokumentace je dostupná z <https://kvhem.github.io/CatCa/index.html> .

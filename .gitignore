@@ -31,6 +31,6 @@ vignettes/*.pdf
 data
 .RData
 .Ruserdata
-man/
-
+/man/
+/prep/
 .Rproj.user

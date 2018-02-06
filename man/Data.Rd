@@ -48,7 +48,10 @@ Umožňuje přistupovat k datasetům ze synchronizované owncloud složky "used_
 \strong{TABA} (data.table): Tabulka následnosti povodí
 \itemize{
 \item FROM: UPOV_ID odkud (tece voda)
-\item TO: UPOV_ID kam (tece voda)
+\item TO: UPOV_ID kam (tece voda), -9999 = mimo republiku
+\item FR_ORD, TO_ORD: rady toku
+\item UPOV_AREA: plocha povodi - jen UPOV
+\item TOTAL_AREA: celkova plocha povodi - az k prameni - v soucasnosti pro povodi Ohre a ostatni nedodana povodi dopocteno jako suma UPOV_AREA - nekde to muze byt uplne blbe
 }
 
 \strong{TABB} (data.table): Tabulka vsech hornich povodi pro danny UPOV
@@ -58,6 +61,16 @@ Umožňuje přistupovat k datasetům ze synchronizované owncloud složky "used_
 }
 
 \strong{TABNAD} (data.table): Tabulka charakteristik nadrží
+\itemize{
+\item UPOV_ID - UPOV_ID
+}
+
+\strong{TABREKY} (data.table): Tabulka delek rek pro HYPE
+\itemize{
+\item UPOV_ID - UPOV_ID
+\item L_HTOK: delka hlavniho toku v metrech
+\item L_VTOK: delka vedlejsich toku v metrech
+}
 }
 
 \section{Data(uziv06)}{
@@ -88,7 +101,7 @@ Umožňuje přistupovat k datasetům ze synchronizované owncloud složky "used_
 }
 }
 
-\section{Data(webapp_geo)}{
+\section{Data(webapp_data)}{
 
 
 \strong{JEZERA}

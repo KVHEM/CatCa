@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Načte globální cesty — give_paths • CatCa</title>
+<title>Prevody mezi vyskami a objemy — q2mm_day • CatCa</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -80,31 +80,59 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Načte globální cesty</h1>
+    <h1>Prevody mezi vyskami a objemy</h1>
     </div>
 
     
-    <p>Načte proměnné <code>.datadir</code> (synchronizovaná owncloud složka "used_data" z BILAN_UPOV) a <code>.workdir</code> (zatím nevyužito) na základě jména počítače. Před použitím je nutné PC registrovat - buď úpravou kódu na githubu nebo emailem na <a href='mailto:hanel@fzp.czu.cz'>hanel@fzp.czu.cz</a> ve struktuře</p><pre>
-jmeno_PC = { 
-  .datadir = 'cesta do used_data' 
-  .workdir = 'pracovni cesta' 
-} 
-</pre>
+    <p>Prevody mezi vyskami a objemy</p>
     
 
-    <pre class="usage"><span class='no'>give_paths</span></pre>
-        
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <pre class="usage"><span class='fu'>q2mm_day</span>(<span class='no'>q</span>, <span class='no'>id</span>, <span class='no'>...</span>)
 
-    <p>Přiřadí do <code>.GlobalEnv</code> proměnné <code>.datadir</code> a <code>.workdir</code></p>
+<span class='fu'>mm_day2q</span>(<span class='no'>mm</span>, <span class='no'>id</span>, <span class='no'>...</span>)
+
+<span class='fu'>u2mm_month</span>(<span class='no'>u</span>, <span class='no'>id</span>, <span class='no'>...</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>q</th>
+      <td><p>odtok v m3/s</p></td>
+    </tr>
+    <tr>
+      <th>id</th>
+      <td><p>UPOV_ID</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>parametry pro A (tj. momentalne upov_only)</p></td>
+    </tr>
+    <tr>
+      <th>mm</th>
+      <td><p>odtok v mm</p></td>
+    </tr>
+    <tr>
+      <th>u</th>
+      <td><p>uzivani v tis. m3</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+
+    <ul>
+<li><p><code>mm_day2q</code>:</p></li>
+<li><p><code>u2mm_month</code>:</p></li>
+</ul>
     
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#value">Value</a></li>
+      <li><a href="#functions">Functions</a></li>
           </ul>
 
   </div>

@@ -27,14 +27,23 @@
 #' 
 #' **TABA** (data.table): Tabulka následnosti povodí
 #'  * FROM: UPOV_ID odkud (tece voda)
-#'  * TO: UPOV_ID kam (tece voda)
+#'  * TO: UPOV_ID kam (tece voda), -9999 = mimo republiku
+#'  * FR_ORD, TO_ORD: rady toku
+#'  * UPOV_AREA: plocha povodi - jen UPOV
+#'  * TOTAL_AREA: celkova plocha povodi - az k prameni - v soucasnosti pro povodi Ohre a ostatni nedodana povodi dopocteno jako suma UPOV_AREA - nekde to muze byt uplne blbe 
 #'  
 #' **TABB** (data.table): Tabulka vsech hornich povodi pro danny UPOV
 #'  * FROM:
 #'  * TO:
 #'    
 #' **TABNAD** (data.table): Tabulka charakteristik nadrží
+#'  * UPOV_ID - UPOV_ID
 #' 
+#' **TABREKY** (data.table): Tabulka delek rek pro HYPE
+#'  * UPOV_ID - UPOV_ID
+#'  * L_HTOK: delka hlavniho toku v metrech
+#'  * L_VTOK: delka vedlejsich toku v metrech
+#'  
 #' @section Data(uziv06):
 #' 
 #' **UZIV06** (data.table): užívání 2006-2016 v tis.m3/mes 
@@ -65,7 +74,7 @@
 #' **STANICE**
 #' * ?
 #' 
-#'     
+#' @export Data
 Data = function(...){
 
   E = expression(
@@ -78,7 +87,7 @@ Data = function(...){
          
          'geo' = {
            NADRZE = rgdal::readOGR(file.path(.datadir,"geo/nadrze.shp"), "nadrze")
-           UPOVS = rgdal::readOGR(file.path(.datadir,"geo/UPOV_povodi.shp"), "UPOV_povodi")
+           UPOVS = rgdal::readOGR(file.path(.datadir,"geo/UPOV_poly.shp"))
          },
          
          'qd' = {
@@ -86,9 +95,11 @@ Data = function(...){
          },
          
          'routing' = {
-           TABA = data.table::data.table(base::readRDS(file.path(.datadir,"routing/TABA.Rds")))
-           TABB = data.table::data.table(base::readRDS(file.path(.datadir,"routing/TABB.Rds")))
+           warning('Plochy TOTAL_AREA jsou pro nektera povodi dopoctene - po zfinalizovani dodavky od CHMU bude vymeneno. Rozdily, zejmena na hranicich republiky mohou byt znacne! mh')
+           TABA = data.table::data.table(base::readRDS(file.path(.datadir,"routing/TABA.rds")))
+           TABB = data.table::data.table(base::readRDS(file.path(.datadir,"routing/TABB.rds")))
            TABNAD = base::readRDS(file.path(.datadir,"routing/nadrze_tab.rds"))
+           TABREKY = base::readRDS(file.path(.datadir, "routing/DELKY_REK.rds"))
          },
          
          'uziv06' = {

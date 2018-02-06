@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Načte globální cesty — give_paths • CatCa</title>
+<title>Extrahuj z tabulky CHARS — ch • CatCa</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -80,32 +80,49 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Načte globální cesty</h1>
+    <h1>Extrahuj z tabulky CHARS</h1>
     </div>
 
     
-    <p>Načte proměnné <code>.datadir</code> (synchronizovaná owncloud složka "used_data" z BILAN_UPOV) a <code>.workdir</code> (zatím nevyužito) na základě jména počítače. Před použitím je nutné PC registrovat - buď úpravou kódu na githubu nebo emailem na <a href='mailto:hanel@fzp.czu.cz'>hanel@fzp.czu.cz</a> ve struktuře</p><pre>
-jmeno_PC = { 
-  .datadir = 'cesta do used_data' 
-  .workdir = 'pracovni cesta' 
-} 
-</pre>
+    <p>Extrahuj z tabulky CHARS</p>
     
 
-    <pre class="usage"><span class='no'>give_paths</span></pre>
-        
+    <pre class="usage"><span class='fu'>ch</span>(<span class='no'>...</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>...</th>
+      <td><p>nazev pozadovane veliciny, nemusi byt v uvozovkach</p></td>
+    </tr>
+    </table>
+    
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Přiřadí do <code>.GlobalEnv</code> proměnné <code>.datadir</code> a <code>.workdir</code></p>
+    <p>funkci s parametrem id = UPOV_ID</p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'>ch</span>(<span class='no'>Qa</span>)</div><div class='output co'>#&gt; function(id){
+#&gt;     e = parse(text = n)
+#&gt;     CHARS[UPOV_ID %in% id, eval(e)]
+#&gt;   }
+#&gt; &lt;bytecode: 0x96c8860&gt;
+#&gt; &lt;environment: 0x9be0860&gt;</div><div class='input'>
+</div><span class='co'># NOT RUN {</span>
+<span class='fu'>ch</span>(<span class='no'>Qa</span>)(<span class='kw'>id</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>'BER_0100'</span>, <span class='st'>'BER_0010'</span>))
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>
