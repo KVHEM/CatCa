@@ -27,4 +27,5 @@ Imports:
   spatial,
   data.table,
   magrittr,
-  doParallel
+  doParallel,
+  parallel
