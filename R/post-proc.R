@@ -57,7 +57,9 @@ bilan_gen <- function(UPOVS, ...) {
                    input_vars = data.frame(UPOV_AMETEO[, eval(ivars)]),
                     init_date = '1982-11-01',
                        append = FALSE)
-    bil.pet(b)
+    if(is.null(eval(ivars)$PET)) {
+      bil.pet(b)
+    }
     bil.run(b)
 
     saveRDS(bil.get.values(b), file.path(paste0(.datadir, 'bilan/', UPOVS[i], '.rds')))
