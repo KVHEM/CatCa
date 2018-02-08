@@ -29,31 +29,38 @@ post_process = function(aggregate = TRUE, indicators = TRUE){
 #' Generuje denni data na zaklade parametru z used_data/pars, ulozi vysledek do used_data/bilan
 #'
 #' @param UPOVS jeden nebo vice utvaru
+#' @param ivars sada vstupnich parametru modelu bilan
 #' @return
 #' @export bilan_gen
 #'
 #' @examples
-bilan_gen <- function(UPOVS){
+#'
+#' UPOVS <- c('DYJ_0320', 'BER_0050')
+#' bilan_gen(UPOVS, P = P, T = T, R = 0) # Stepankova data
+#'
+#' bilan_gen(UPOVS, P = Rain, Tavg = T, PET = Etr, R = 0) # SoilClim data
+#'
+bilan_gen <- function(UPOVS, ...) {
+
+  ivars <- expression(list(...))
 
   stop_cluster <- create_cluster()
 
   foreach(i = 1:length(UPOVS)) %dopar% {
-    UPOV_PARS <- readRDS(file.path(.datadir, 'pars/pars.rds'))[UPOVS[i]]
-    UPOV_AMETEO <- as.data.table(readRDS(file.path(.datadir, 'ameteo61-16', paste0(UPOVS[i], '.rds'))))
+    UPOV_PARS <- readRDS(file.path(paste0(.datadir, 'pars/pars.rds')))[[UPOVS[i]]]
+    UPOV_AMETEO <- as.data.table(readRDS(file.path(.datadir, 'amteo61-16', paste0(UPOVS[i], '.rds'))))
     UPOV_AMETEO <- UPOV_AMETEO[DTM >= '1982-11-01' & DTM <= '2010-10-31', ]
 
-    bil <- bil.new(type = "D")
-    bil.set.params.curr(model = bil, params = UPOV_PARS$pars$current[1:6])
-    bil.set.values(     model = bil,
-                   input_vars = data.frame(P = UPOV_AMETEO[], # eval[]
-                                           T = UPOV_AMETEO[]),
+    b <- bil.new(type = "D")
+    bil.set.params.curr(model = b, params = UPOV_PARS$pars$current[1:6])
+    bil.set.values(     model = b,
+                   input_vars = data.frame(UPOV_AMETEO[, eval(ivars)]),
                     init_date = '1982-11-01',
                        append = FALSE)
-    bil.pet(bil)
-    bil.run(bil)
-    TSERIES_BIL <- bil.get.values(bil)
+    bil.pet(b)
+    bil.run(b)
 
-    saveRDS(TSERIES_BIL, file.path(.datadir, paste0('bilan/', UPOVS[i], '.rds')))
+    saveRDS(bil.get.values(b), file.path(paste0(.datadir, 'bilan/', UPOVS[i], '.rds')))
   }
 
   stop_cluster()
