@@ -279,7 +279,6 @@ load_path_from_CatCa()
 setwd(.datadir)  
 #6 uzivani / UPOV_ID
 #--------------------
-require(rgeos)
 
 povodi <- readOGR("used_data/webapp_data/geo/povodi.shp")
 popis <- read.table('used_data/webapp_data/E_ISVS$UTV_POV.txt',encoding = 'UTF-8', header = TRUE, sep=';')

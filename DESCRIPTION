@@ -7,14 +7,15 @@ Description: Contains functions for calibration based both on the order of water
   and unique identifier of the waterbody.
 Depends: R (>= 3.3.0),
   readxl,
- 	rgeos,
- 	rgdal,
+  rgeos,
+  rgdal,
   raster,
   spatial,
   data.table,
   magrittr,
   doParallel,
-  SPEI
+  SPEI,
+  parallel
 License: MIT
 Encoding: UTF-8
 LazyData: false
