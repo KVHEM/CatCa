@@ -7,14 +7,14 @@
 give_paths
 }
 \value{
-Přiřadí do \code{.GlobalEnv} proměnné \code{.datadir} a \code{.workdir}
+Přiřadí do \code{.GlobalEnv} proměnné \code{.datadir}, \code{.workdir} a \code{.where}
 }
 \description{
 Načte proměnné \code{.datadir} (synchronizovaná owncloud složka "used_data" z BILAN_UPOV) a \code{.workdir} (zatím nevyužito) na základě jména počítače. Před použitím je nutné PC registrovat - buď úpravou kódu na githubu nebo emailem na \email{hanel@fzp.czu.cz} ve struktuře
 \preformatted{
-jmeno_PC = { 
-  .datadir = 'cesta do used_data' 
-  .workdir = 'pracovni cesta' 
-} 
+jmeno_PC = {
+  .datadir = 'cesta do used_data'
+  .workdir = 'pracovni cesta'
+}
 }
 }
