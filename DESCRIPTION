@@ -6,6 +6,7 @@ Authors@R: c(person(given = "Petr", family = "Pavlik", email = "pavlikpetr@fzp.c
 Description: Contains functions for calibration based both on the order of waterbody in cascade 
   and unique identifier of the waterbody.
 Depends: R (>= 3.3.0),
+  bilan,
   readxl,
   rgeos,
   rgdal,
@@ -21,6 +22,7 @@ Encoding: UTF-8
 LazyData: false
 RoxygenNote: 6.0.1
 Imports:
+  bilan,
   readxl,
   rgeos,
   rgdal,
