@@ -169,9 +169,8 @@ prep_QD <- function(){
 load_path_from_CatCa()
 #3 Denní průtoky
 #--------------------
-setwd(.datadir)
-setwd("..")
 
+  
 #Loading
 #--------------------
 
@@ -347,4 +346,24 @@ saveRDS(u, file.path(choose.dir(caption ="Složka pro ukládání dat (pref. use
 # }
 
 
- 
+#' Priprava parametrů pro aplikaci
+#'
+#' @return
+#' @export prep_pars
+#'
+#' @examples
+prep_pars <- function(){
+  load_path_from_CatCa()
+
+data <- c()
+name <- names(pars)
+for(i in 1:length(pars)){
+  tab <- pars[[i]]
+  data <- rbind(data,
+                data.frame(UPOV_ID = rep(name[i],6), tab$pars))
+  print(paste("Processing....",i))
+  
+}
+
+saveRDS(data, file.path(choose.dir(caption ="Složka pro ukládání dat (pref. used_data/webapp_data/pars)"), "pars.rds"))
+}
