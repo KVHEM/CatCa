@@ -47,6 +47,10 @@ switch(where,
          .datadir = "D://muj_cloud//Shared//BILAN_UPOV//used_data"
          .workdir = ""
        },
+       "HERMANOVSKY-01.czu.cz" = {
+         .datadir = "C://mujcloud//Shared//BILAN_UPOV//used_data"
+         .workdir = ""       
+       },
        "LEST" = {
          .datadir = "C://testR//data//"
          .workdir = "C://testR//"
