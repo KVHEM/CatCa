@@ -28,7 +28,7 @@ switch(where,
            .workdir <- ''
         },
          'DESKTOP-444RM63' = {
-           .datadir <- "C://Users//PetrP//ownCloud//data//used_data//"
+           .datadir <- "C://Users//PetrP//ownCloud//used_data//"
            .workdir <- "C://Users//PetrP//Documents//BILAN_OWNCL//"
        },
         'petr-System' = {
