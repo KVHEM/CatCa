@@ -325,28 +325,25 @@ catca_spei <- function(ref = getOption('ref_period')) {
 #' @export cal_dv
 #'
 #' @examples
-cal_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'BF', 'SW', 'GS'), ref = getOption('ref_period')) {
+cal_dv <- function(DV_standardize = TRUE, DV_thr = .2, dVc_vars = c('RM', 'P', 'BF'), dVn_vars = c('SW', 'GS')) {
 
   message('Pocitam thresholdy pro dV.')
   setwd(file.path(.datadir, 'postproc_stable'))
   if(!exists("BM")) {
     BM <- data.table(readRDS('bilan_month.rds'))
   }
+  
+  q = BM[variable %in% c(dVc_vars, dVn_vars)]
+  #def_vol(q$value, quantile(q$value, DV_thr))
+  q$value <- replace(q$value, is.na(q$value), 0)
 
-  def_vol_val = function(dVc_vars = c('RM', 'P', 'BF'), dVn_vars = c('SW', 'GS')) {
+  q[, THR := quantile(value, DV_thr), by = .(UPOV_ID, variable)]
+  q <- unique(q[, .(UPOV_ID, variable, THR)])
+  #q <- q[!is.na(dV)]
 
-    q = BM[variable %in% c(dVc_vars, dVn_vars)]
-    #def_vol(q$value, quantile(q$value, DV_thr))
-    q$value <- replace(q$value, is.na(q$value), 0)
-
-    q[, THR := quantile(value, DV_thr), by = .(UPOV_ID, variable)]
-    q <- unique(q[, .(UPOV_ID, variable, THR)])
-    #q <- q[!is.na(dV)]
-
-    setwd(file.path(.datadir, 'indikatory'))
-    saveRDS(q, 'dV_thr.rds')
-  }
-
+  setwd(file.path(.datadir, 'indikatory'))
+  saveRDS(q, 'dV_thr.rds')
+  
 }
 
 #' Vypocet deficitnich objemu
@@ -360,7 +357,8 @@ cal_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'B
 #' @export catca_dv
 #'
 #' @examples
-catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 'BF', 'SW', 'GS'), ref = getOption('ref_period')) {
+catca_dv <- function(DV_standardize = TRUE, ref = getOption('ref_period'),
+                     dVc_vars = c('RM', 'P', 'BF'), dVn_vars = c('SW', 'GS')) {
 
   message('Pocitam dV.')
   setwd(file.path(.datadir, 'postproc_stable'))
@@ -386,27 +384,25 @@ catca_dv <- function(DV_standardize = TRUE, DV_thr = .2, DV_vars = c('P', 'RM', 
 
     fct
   }
+  
+  q = BM[variable %in% c(dVc_vars, dVn_vars)]
+  #def_vol(q$value, quantile(q$value, DV_thr))
+  q$value <- replace(q$value, is.na(q$value), 0)
 
-  def_vol_val = function(dVc_vars = c('RM', 'P', 'BF'), dVn_vars = c('SW', 'GS')) {
+  setwd(file.path(.datadir, 'indikatory'))
+  q_thr <- readRDS("dV_thr.rds")
 
-    q = BM[variable %in% c(dVc_vars, dVn_vars)]
-    #def_vol(q$value, quantile(q$value, DV_thr))
-    q$value <- replace(q$value, is.na(q$value), 0)
+  q <- merge(q, q_thr, by = c("UPOV_ID", "variable"))
+  q[, EID := def_vol_id(value, THR)]
+  q[!is.na(EID) & variable %in% dVc_vars, dV := cumsum(THR - value), by = .(UPOV_ID, variable, EID)]
+  q[!is.na(EID) & variable %in% dVn_vars, dV := (THR - value), by = .(UPOV_ID, variable, EID)]
 
-    setwd(file.path(.datadir, 'indikatory'))
-    q_thr <- readRDS("dv_thr.rds")
+  q <- q[, .(UPOV_ID, year, month, variable, EID, dV)]
+  q <- q[!is.na(dV)]
 
-    q <- merge(q, q_thr, by = c("UPOV_ID", "variable"))
-    q[, EID := def_vol_id(value, THR)]
-    q[!is.na(EID) & variable %in% dVc_vars, dV := cumsum(THR - value), by = .(UPOV_ID, variable, EID)]
-    q[!is.na(EID) & variable %in% dVn_vars, dV := (THR - value), by = .(UPOV_ID, variable, EID)]
-
-    q <- q[, .(UPOV_ID, year, month, variable, EID, dV)]
-    #q <- q[!is.na(dV)]
-
-    setwd(file.path(.datadir, 'indikatory'))
-    saveRDS(q, 'dV.rds')
-  }
+  setwd(file.path(.datadir, 'indikatory'))
+  saveRDS(q, 'dV.rds')
+  
 
 }
 
@@ -462,7 +458,7 @@ cal_indicators = function() {
 #' @export indicators
 #'
 #' @examples
-indicators = function() {
+catca_indicators = function() {
 
   message('Pocitam indikatory.')
 
