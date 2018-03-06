@@ -35,7 +35,7 @@ switch(where,
          .datadir <- "/home/petr/Dokumenty/ownCloud/data/used_data"
          .workdir <- ""
        },
-       "lest" = {
+       "HANEL-SN-01" = {
          .datadir = "/home/owc/BILAN_UPOV/used_data/"
          .workdir = ""
        },
