@@ -68,6 +68,25 @@ bilan_gen <- function(UPOVS, ...) {
   stop_cluster()
 }
 
+#' Vygeneruje data.table parametru z used_data/pars
+#'
+#' @param file nazev souboru - default = pars.rds
+#'
+#' @return
+#' @export bilan_getPars
+#'
+#' @examples
+bilan_getPars = function(file = 'pars.rds'){
+  
+  setwd(file.path(.datadir, 'pars'))
+  pa = readRDS(file)
+
+  p  = lapply(pa, function(x){x$pars[, .(name, current)]})
+  
+  rbindlist(p, idcol = 'UPOV_ID')
+  
+}
+
 #' Agreguje data z used_data/bilan na mesicni a tydenni krok, ulozi vysledek do used_data/postproc
 #'
 #' @return
