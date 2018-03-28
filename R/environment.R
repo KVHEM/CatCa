@@ -69,6 +69,10 @@ switch(where,
        },
        "telly" = {
          .datadir = "/home/owc/BILAN_UPOV/used_data/"
+       },
+       "LAPTOP-HFSJ0HMO" = {
+         .datadir = "C://Users//ARCH//Documents//SUCHO//used_data//"
+         .workdir = ""
        }
 )
 
