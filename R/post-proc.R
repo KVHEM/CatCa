@@ -474,7 +474,7 @@ cal_indicators = function() {
 #' @param DV_thr prah pro vypocet nedostatkovych objemu
 #'
 #' @return data.table s casovymi radami indikatoru
-#' @export indicators
+#' @export catca_indicators
 #'
 #' @examples
 catca_indicators = function() {
