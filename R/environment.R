@@ -20,7 +20,7 @@ switch(where,
            .workdir = ""
          },
         'adam' = {
-          .datadir = "/home/adam/Shared/BILAN_UPOV/used_data"
+          .datadir = "/media/adam/d5b1fc6d-c9a0-457e-bf41-4daaa142c3de/home/adam/Shared/BILAN_UPOV/"
           .workdir = ""
         },
          'desrt' = {
