@@ -15,65 +15,65 @@ give_paths <- function(){
 where <- if(.Platform[["OS.type"]] == 'unix') (Sys.info()['nodename']) else (Sys.getenv('COMPUTERNAME'))
 
 switch(where,
-         'match' = {
-           .datadir = "/home/owc/BILAN_UPOV/used_data/"
-           .workdir = ""
-         },
+        'match' = {
+          .datadir = "/home/owc/BILAN_UPOV/used_data/"
+          .workdir = ""
+        },
         'adam' = {
           .datadir = "/media/adam/d5b1fc6d-c9a0-457e-bf41-4daaa142c3de/home/adam/Shared/BILAN_UPOV/used_data/"
           .workdir = ""
         },
-         'desrt' = {
-           .datadir <- "/home/owc/BILAN_UPOV/used_data/"
-           .workdir <- ''
+        'desrt' = {
+          .datadir <- "/home/owc/BILAN_UPOV/used_data/"
+          .workdir <- ''
         },
-         'DESKTOP-444RM63' = {
-           .datadir <- "C://Users//PetrP//ownCloud//used_data//"
-           .workdir <- "C://Users//PetrP//Documents//BILAN_OWNCL//"
-       },
+        'DESKTOP-444RM63' = {
+          .datadir <- "C://Users//PetrP//ownCloud//used_data//"
+          .workdir <- "C://Users//PetrP//Documents//BILAN_OWNCL//"
+        },
         'petr-System' = {
-         .datadir <- "/home/petr/Dokumenty/ownCloud/data/used_data"
-         .workdir <- ""
-       },
-       "HANEL-SN-01" = {
-         .datadir = "/home/owc/BILAN_UPOV/used_data/"
-         .workdir = ""
-       },
-       "bastap-pc-01" = {
-         .datadir = "D:\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
-         .workdir = ""
-       },
-       "HERMANOVSKY-01" = {
-         .datadir = "C://mujcloud//Shared//BILAN_UPOV//used_data"
-         .workdir = ""       
-       },
-       "LEST" = {
-         .datadir = "C://testR//data//"
-         .workdir = "C://testR//"
-       },
-       'rserver.science.fzp.czu.cz' = {
-         .datadir = "/srv/shiny-server/KVHEM/HAMR/used_data"
-         .workdir = ""
-       },
-       'IRINA' = {
-         .datadir = "C:\\Users\\Irina\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
-         .workdir = ""
-       },
-       "VMORAVEC-NB-01" = {
-         .datadir = "D:\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
-         .workdir = ""
-       },
-       'DESKTOP-IDM6O5J' = {
-         .datadir = "C:\\Users\\Zenbook\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
-         .workdir = ""
-       },
-       "telly" = {
-         .datadir = "/home/owc/BILAN_UPOV/used_data/"
-       },
-       "LAPTOP-HFSJ0HMO" = {
-         .datadir = "C://Users//ARCH//Documents//SUCHO//used_data//"
-         .workdir = ""
-       }
+          .datadir <- "/home/petr/Dokumenty/ownCloud/data/used_data"
+          .workdir <- ""
+        },
+        "HANEL-SN-01" = {
+          .datadir = "/home/owc/BILAN_UPOV/used_data/"
+          .workdir = ""
+        },
+        "bastap-pc-01" = {
+          .datadir = "D:\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
+          .workdir = ""
+        },
+        "HERMANOVSKY-01" = {
+          .datadir = "C://mujcloud//Shared//BILAN_UPOV//used_data"
+          .workdir = ""       
+        },
+        "LEST" = {
+          .datadir = "C://testR//data//"
+          .workdir = "C://testR//"
+        },
+        'rserver.science.fzp.czu.cz' = {
+          .datadir = "/srv/shiny-server/KVHEM/HAMR/used_data"
+          .workdir = ""
+        },
+        'IRINA' = {
+          .datadir = "C:\\Users\\Irina\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
+          .workdir = ""
+        },
+        "VMORAVEC-NB-01" = {
+          .datadir = "D:\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
+          .workdir = ""
+        },
+        'DESKTOP-IDM6O5J' = {
+          .datadir = "C:\\Users\\Zenbook\\ownCloud\\Shared\\BILAN_UPOV\\used_data"
+          .workdir = ""
+        },
+        "telly" = {
+          .datadir = "/home/owc/BILAN_UPOV/used_data/"
+        },
+        "LAPTOP-HFSJ0HMO" = {
+          .datadir = "D:/ownCloud/Shared/BILAN_UPOV/used_data/"
+          .workdir = ""
+        }
 )
 
   if (is.null(.datadir)) {
