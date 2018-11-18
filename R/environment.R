@@ -31,7 +31,7 @@ switch(where,
           .datadir <- "C://Users//PetrP//ownCloud//used_data//"
           .workdir <- "C://Users//PetrP//Documents//BILAN_OWNCL//"
         },
-        'ubu' = {
+        'Ubu' = {
           .datadir <- "/media/ubu/ADATA SV620/ownCloud/Shared/BILAN_UPOV/used_data/"
           .workdir <- ""
         },
